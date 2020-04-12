@@ -1,0 +1,111 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@model List<LinqDemoApp.Models.LoaiSanPham>
+<br />
+<h4>Shoe Type List</h4>
+
+<ul class="list-group">
+
+    @foreach (var type in Model)
+    {
+        <li class="list-group-item list-group-item-action">
+            <div class="my-list">
+                <span id="type-@type.MaLoaiSP">@type.TenLoaiSP</span>
+                <div>
+                    <button type="button" class="edit-btn btn btn-outline-primary" data-id="@type.MaLoaiSP">Edit</button>
+                    <button type="button" class="del-btn btn btn-outline-danger" data-id="@type.MaLoaiSP">Delete</button>
+                </div>
+
+            </div>
+
+        </li>
+    }
+
+</ul>
+
+<br />
+
+<!-- Input -->
+<div class="input-group mb-3">
+    <input id="add-text" type="text" class="form-control" placeholder="Add type here">
+    <div class="input-group-append">
+        <button id="add-btn" class="btn btn-outline-secondary" type="button">Add</button>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="my-modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLabel">Enter new value</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <input id="new-text" type="text" class="form-control">
+                    <div class="input-group-append">
+                        <button id="save-btn" type="button" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-3.4.1.min.js"></script>
+<script>
+    $('#add-btn').click(function () {
+        var val = $('#add-text').val();
+        if (val.trim() === '') return;
+
+        $.post('/Shoe/Add',
+            { 'type': val },
+            (_) => location.reload()
+        );
+
+    }
+    );
+
+    var id;
+    var title;
+
+    $('.edit-btn').click(function () {
+        id = + $(this).data('id');
+        title = $('#type-' + id).html();
+        $('#new-text').attr("value", title);
+        $('#new-text').attr("placeholder", title);
+        $('#my-modal').modal('show');
+
+    });
+
+    $('#save-btn').click(function () {
+        var val = $('#new-text').val();
+        if (val.trim() === '') return;
+
+        $.post('/Shoe/Update',
+            { 'id': id, 'value': val },
+            (_) => location.reload()
+        );
+    });
+
+    $('.del-btn').click(function () {
+        var res = confirm('Are you sure?');
+        if (res) {
+            var id = + $(this).data('id');
+
+            $.post('/Shoe/Delete',
+                { 'id': id },
+                (_) => location.reload()
+            );
+        }
+    });
+
+</script>
